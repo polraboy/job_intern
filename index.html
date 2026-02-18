@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Staff Portal · Courtyard by Marriott Phuket Town</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Sarabun:wght@300;400;500&family=Cinzel:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --cream:#faf7f2; --cream2:#f3ede3; --parchment:#e8dfd0;
+  --gold:#b8963e; --gold-light:#d4ad5a; --gold-pale:#f0e4c4;
+  --espresso:#2a1f14; --bark:#4a3728; --stone:#7a6e65; --sand:#c4b49a;
+  --white:#ffffff;
+  --avail:#7ab648; --avail-bg:#f0fae8; --avail-border:#a8d99a;
+  --occ:#c94040; --occ-bg:#fdf0f0; --occ-border:#f0a0a0;
+  --main:#c8860a; --main-bg:#fdf8e8; --main-border:#f5d090;
+  --shadow:rgba(42,31,20,0.12); --shadow-deep:rgba(42,31,20,0.25);
+}
+body { font-family:'Sarabun',sans-serif; background:var(--cream); min-height:100vh; color:var(--espresso); overflow-x:hidden; }
+
+/* PAGE SYSTEM */
+.page { display:none; min-height:100vh; flex-direction:column; }
+.page.active { display:flex; }
+
+/* ========== LOGIN ========== */
+#page-login { flex-direction:row; align-items:stretch; }
+.login-visual { flex:1; position:relative; overflow:hidden; min-height:100vh; }
+.login-visual-bg {
+  position:absolute; inset:0;
+  background:radial-gradient(ellipse 60% 80% at 30% 60%,rgba(184,150,62,.18) 0%,transparent 70%),
+             radial-gradient(ellipse 80% 50% at 80% 20%,rgba(74,55,40,.6) 0%,transparent 60%),
+             linear-gradient(160deg,#1a110a 0%,#2a1f14 40%,#3d2e1e 70%,#1e1509 100%);
+}
+.login-visual-pattern {
+  position:absolute; inset:0;
+  background-image:repeating-linear-gradient(45deg,transparent,transparent 40px,rgba(184,150,62,.04) 40px,rgba(184,150,62,.04) 41px),
+                   repeating-linear-gradient(-45deg,transparent,transparent 40px,rgba(184,150,62,.04) 40px,rgba(184,150,62,.04) 41px);
+}
+.login-visual-content { position:absolute; inset:0; display:flex; flex-direction:column; justify-content:flex-end; padding:60px 56px; }
+.hotel-emblem { width:80px;height:80px;border:2px solid rgba(184,150,62,.5);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:32px;position:relative; }
+.hotel-emblem::before { content:'';position:absolute;inset:4px;border:1px solid rgba(184,150,62,.25);border-radius:50%; }
+.emblem-letter { font-family:'Cinzel',serif;font-size:28px;color:var(--gold); }
+.visual-hotel-name { font-family:'Cinzel',serif;font-size:13px;letter-spacing:.3em;color:var(--gold);margin-bottom:8px; }
+.visual-hotel-full { font-family:'Cormorant Garamond',serif;font-size:42px;color:var(--cream);font-weight:300;line-height:1.15;margin-bottom:20px; }
+.visual-hotel-full em { font-style:italic;color:var(--gold-light); }
+.visual-divider { width:48px;height:1px;background:linear-gradient(90deg,var(--gold),transparent);margin:16px 0; }
+.visual-tagline { font-size:13px;color:var(--sand);letter-spacing:.08em;font-weight:300; }
+
+.login-panel { width:440px;flex-shrink:0;background:var(--cream);display:flex;flex-direction:column;justify-content:center;padding:60px 52px;position:relative;animation:panelIn .8s cubic-bezier(.16,1,.3,1) both; }
+@keyframes panelIn { from{opacity:0;transform:translateX(40px)} to{opacity:1;transform:translateX(0)} }
+.login-panel::before { content:'';position:absolute;top:0;left:0;width:1px;height:100%;background:linear-gradient(180deg,transparent,var(--parchment) 30%,var(--parchment) 70%,transparent); }
+.panel-badge { display:inline-flex;align-items:center;gap:8px;background:var(--gold-pale);border:1px solid var(--gold);border-radius:2px;padding:5px 12px;margin-bottom:36px;width:fit-content; }
+.panel-badge span { font-family:'Cinzel',serif;font-size:10px;letter-spacing:.25em;color:var(--gold); }
+.panel-heading { font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:400;color:var(--espresso);line-height:1.15;margin-bottom:6px; }
+.panel-sub { font-size:13px;color:var(--stone);margin-bottom:40px;font-weight:300;letter-spacing:.02em; }
+.field { margin-bottom:22px; }
+.field-label { display:block;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.2em;color:var(--stone);margin-bottom:8px;text-transform:uppercase; }
+.input-wrap { position:relative; }
+.field-input { width:100%;padding:13px 16px 13px 44px;background:var(--white);border:1px solid var(--parchment);border-bottom:2px solid var(--parchment);font-family:'Sarabun',sans-serif;font-size:14px;color:var(--espresso);outline:none;transition:all .25s; }
+.field-input::placeholder { color:var(--sand);font-weight:300; }
+.field-input:focus { border-color:var(--gold-pale);border-bottom-color:var(--gold);background:#fffdf9;box-shadow:0 4px 16px rgba(184,150,62,.1); }
+.field-icon { position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--sand);font-size:14px;pointer-events:none; }
+.form-row { display:flex;align-items:center;justify-content:space-between;margin-bottom:32px; }
+.remember { display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none; }
+.remember input[type=checkbox] { width:14px;height:14px;padding:0;accent-color:var(--gold);cursor:pointer; }
+.remember span { font-size:12px;color:var(--stone);letter-spacing:.03em; }
+.forgot-link { font-size:12px;color:var(--gold);cursor:pointer;letter-spacing:.03em;border-bottom:1px solid transparent;transition:border-color .2s; }
+.forgot-link:hover { border-bottom-color:var(--gold); }
+.btn-primary { width:100%;padding:15px;background:var(--espresso);border:none;color:var(--gold-light);font-family:'Cinzel',serif;font-size:12px;letter-spacing:.25em;text-transform:uppercase;cursor:pointer;position:relative;overflow:hidden;transition:all .3s; }
+.btn-primary::before { content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(184,150,62,.15),transparent);opacity:0;transition:opacity .3s; }
+.btn-primary:hover { background:var(--bark);box-shadow:0 8px 32px rgba(42,31,20,.25); }
+.btn-primary:hover::before { opacity:1; }
+.btn-primary.loading .btn-text { opacity:0; }
+.btn-primary.loading::after { content:'';position:absolute;width:18px;height:18px;border:1.5px solid rgba(212,173,90,.3);border-top-color:var(--gold-light);border-radius:50%;top:50%;left:50%;margin:-9px 0 0 -9px;animation:spin .8s linear infinite; }
+@keyframes spin { to{transform:rotate(360deg)} }
+.or-divider { display:flex;align-items:center;gap:16px;margin:24px 0; }
+.or-line { flex:1;height:1px;background:var(--parchment); }
+.or-text { font-size:11px;color:var(--sand);letter-spacing:.1em; }
+.btn-sso { width:100%;padding:13px;background:transparent;border:1px solid var(--parchment);color:var(--stone);font-family:'Sarabun',sans-serif;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s; }
+.btn-sso:hover { background:var(--cream2);border-color:var(--sand);color:var(--espresso); }
+.panel-footer { margin-top:40px;padding-top:24px;border-top:1px solid var(--parchment);display:flex;align-items:center;justify-content:space-between; }
+.panel-footer-text { font-size:11px;color:var(--sand);letter-spacing:.04em; }
+.online-status { display:flex;align-items:center;gap:6px;font-size:11px;color:var(--stone); }
+.online-dot { width:6px;height:6px;background:#7ab648;border-radius:50%;animation:pulse 2.5s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+.success-overlay { display:none;position:absolute;inset:0;background:var(--cream);flex-direction:column;align-items:center;justify-content:center;gap:14px;animation:fadeIn .4s ease; }
+.success-overlay.show { display:flex; }
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+.success-emblem { width:72px;height:72px;border:2px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;animation:popIn .5s cubic-bezier(.16,1,.3,1);background:var(--gold-pale); }
+@keyframes popIn { from{transform:scale(.4);opacity:0} to{transform:scale(1);opacity:1} }
+.success-title { font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--espresso);font-weight:400; }
+
+/* ========== TOPBAR ========== */
+.topbar { background:var(--espresso);padding:0 40px;height:68px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;animation:barIn .5s ease both; }
+@keyframes barIn { from{opacity:0;transform:translateY(-10px)} to{opacity:1;transform:translateY(0)} }
+.topbar-left { display:flex;align-items:center;gap:20px; }
+.topbar-brand { display:flex;align-items:center;gap:14px; }
+.topbar-monogram { width:36px;height:36px;border:1px solid rgba(184,150,62,.6);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:14px;color:var(--gold); }
+.topbar-name-group { line-height:1.2; }
+.topbar-brand-main { font-family:'Cinzel',serif;font-size:11px;letter-spacing:.2em;color:var(--gold); }
+.topbar-brand-sub { font-size:11px;color:rgba(196,180,154,.6);letter-spacing:.08em;font-weight:300; }
+.topbar-divider { width:1px;height:28px;background:rgba(255,255,255,.1); }
+.back-btn { display:flex;align-items:center;gap:6px;color:var(--sand);cursor:pointer;font-size:12px;font-family:'Cinzel',serif;letter-spacing:.1em;padding:6px 14px;border:1px solid rgba(184,150,62,.25);transition:all .2s;text-transform:uppercase; }
+.back-btn:hover { color:var(--gold-light);border-color:rgba(184,150,62,.5);background:rgba(184,150,62,.07); }
+.topbar-right { display:flex;align-items:center;gap:12px; }
+.user-chip { display:flex;align-items:center;gap:10px;border:1px solid rgba(184,150,62,.25);padding:6px 14px 6px 6px;background:rgba(184,150,62,.06); }
+.user-avatar { width:30px;height:30px;background:linear-gradient(135deg,var(--bark),var(--espresso));border:1px solid rgba(184,150,62,.4);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:11px;color:var(--gold); }
+.user-name { font-size:12px;color:var(--sand);letter-spacing:.04em; }
+
+/* ========== FLOOR PAGE ========== */
+#page-floors { background:var(--cream); }
+.page-content { flex:1;padding:52px 48px;max-width:1180px;width:100%;margin:0 auto;animation:contentIn .6s cubic-bezier(.16,1,.3,1) both .1s; }
+@keyframes contentIn { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+.section-eyebrow { display:flex;align-items:center;gap:16px;margin-bottom:10px; }
+.eyebrow-line { width:32px;height:1px;background:var(--gold); }
+.eyebrow-text { font-family:'Cinzel',serif;font-size:10px;letter-spacing:.3em;color:var(--gold);text-transform:uppercase; }
+.page-title { font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:400;color:var(--espresso);margin-bottom:8px;line-height:1.1; }
+.page-desc { font-size:13px;color:var(--stone);font-weight:300;margin-bottom:48px;letter-spacing:.03em; }
+
+.floor-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:1px;background:var(--parchment);border:1px solid var(--parchment); }
+.floor-card { background:var(--white);padding:28px 24px 24px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden;animation:tileIn .4s cubic-bezier(.16,1,.3,1) both; }
+.floor-card::after { content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform .3s; }
+.floor-card:hover { background:#fffdf6;z-index:1;box-shadow:0 8px 32px var(--shadow-deep); }
+.floor-card:hover::after { transform:scaleX(1); }
+@keyframes tileIn { from{opacity:0;transform:scale(.96)} to{opacity:1;transform:scale(1)} }
+.floor-icon-wrap { width:40px;height:40px;background:var(--cream2);border:1px solid var(--parchment);display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:16px; }
+.floor-num { font-family:'Cormorant Garamond',serif;font-size:46px;font-weight:300;color:var(--espresso);line-height:1;margin-bottom:2px; }
+.floor-label { font-family:'Cinzel',serif;font-size:9px;letter-spacing:.2em;color:var(--stone);text-transform:uppercase;margin-bottom:18px; }
+.floor-dots { display:flex;gap:3px;flex-wrap:wrap;margin-bottom:8px; }
+.floor-dot { width:8px;height:8px;border:1px solid transparent; }
+.dot-has { background:#c8e6c0;border-color:#a5d19b; }
+.dot-none { background:var(--cream2);border-color:var(--parchment); }
+.floor-avail-text { font-size:11px;color:var(--stone);letter-spacing:.04em; }
+.floor-arrow { position:absolute;bottom:24px;right:20px;color:var(--parchment);font-size:18px;transition:all .25s; }
+.floor-card:hover .floor-arrow { color:var(--gold);transform:translateX(4px); }
+
+/* ========== ROOM PAGE ========== */
+#page-rooms { background:var(--cream); }
+.breadcrumb { display:flex;align-items:center;gap:10px;margin-bottom:14px; }
+.bc-item { font-family:'Cinzel',serif;font-size:10px;letter-spacing:.15em;color:var(--sand);text-transform:uppercase;cursor:pointer;transition:color .2s; }
+.bc-item:hover { color:var(--gold); }
+.bc-sep { color:var(--parchment);font-size:12px; }
+.bc-current { font-family:'Cinzel',serif;font-size:10px;letter-spacing:.15em;color:var(--gold);text-transform:uppercase; }
+
+/* Search bar */
+.search-row { display:flex;gap:12px;margin-bottom:36px; }
+.search-wrap { flex:1;position:relative; }
+.search-input { width:100%;padding:12px 16px 12px 44px;background:var(--white);border:1px solid var(--parchment);border-bottom:2px solid var(--parchment);font-family:'Sarabun',sans-serif;font-size:14px;color:var(--espresso);outline:none;transition:all .25s; }
+.search-input::placeholder { color:var(--sand);font-weight:300; }
+.search-input:focus { border-bottom-color:var(--gold);background:#fffdf9;box-shadow:0 4px 12px rgba(184,150,62,.08); }
+.search-icon { position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--sand);font-size:16px;pointer-events:none; }
+.btn-manage { padding:12px 22px;background:var(--espresso);border:none;color:var(--gold-light);font-family:'Cinzel',serif;font-size:10px;letter-spacing:.2em;cursor:pointer;white-space:nowrap;transition:all .25s; }
+.btn-manage:hover { background:var(--bark); }
+
+/* Floor hero */
+.floor-hero { background:var(--espresso);padding:36px 40px;margin-bottom:36px;display:flex;align-items:center;gap:36px;position:relative;overflow:hidden; }
+.floor-hero::before { content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;border:1px solid rgba(184,150,62,.15);border-radius:50%; }
+.floor-hero::after { content:'';position:absolute;top:-80px;right:-80px;width:300px;height:300px;border:1px solid rgba(184,150,62,.08);border-radius:50%; }
+.hero-floor-num { font-family:'Cormorant Garamond',serif;font-size:88px;font-weight:300;color:rgba(184,150,62,.25);line-height:1;flex-shrink:0;position:relative;z-index:1; }
+.hero-info { flex:1;position:relative;z-index:1; }
+.hero-eyebrow { font-family:'Cinzel',serif;font-size:10px;letter-spacing:.3em;color:var(--gold);margin-bottom:8px;text-transform:uppercase; }
+.hero-title { font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:400;color:var(--cream);margin-bottom:4px; }
+.hero-sub { font-size:12px;color:var(--sand);font-weight:300;letter-spacing:.04em; }
+.hero-stats { display:flex;gap:0;position:relative;z-index:1; }
+.stat-block { text-align:center;padding:0 28px;border-left:1px solid rgba(255,255,255,.08); }
+.stat-block:first-child { border-left:none;padding-left:0; }
+.stat-num { font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:400;line-height:1;margin-bottom:4px; }
+.stat-num.has { color:#a8d99a; }
+.stat-num.empty { color:rgba(196,180,154,.4); }
+.stat-label { font-family:'Cinzel',serif;font-size:9px;letter-spacing:.2em;color:var(--sand);text-transform:uppercase; }
+
+/* Room grid */
+.room-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1px;background:var(--parchment);border:1px solid var(--parchment); }
+.room-card { background:var(--white);padding:0;position:relative;overflow:hidden;transition:all .2s;animation:tileIn .4s cubic-bezier(.16,1,.3,1) both; }
+.room-card:hover { background:#fffdf6;z-index:1;box-shadow:0 8px 32px var(--shadow); }
+
+/* Inline card action buttons */
+.card-actions { display:flex;gap:0;border-top:1px solid var(--cream2);margin-top:14px; }
+.card-action-btn {
+  flex:1; padding:9px 6px; background:transparent; border:none;
+  font-family:'Cinzel',serif; font-size:9px; letter-spacing:.15em;
+  cursor:pointer; transition:all .2s; display:flex; align-items:center;
+  justify-content:center; gap:5px; color:var(--stone);
+}
+.card-action-btn:first-child { border-right:1px solid var(--cream2); }
+.card-action-btn.edit-btn:hover { background:var(--gold-pale); color:var(--gold); }
+.card-action-btn.del-btn:hover  { background:#fdf0f0; color:var(--occ); }
+
+.room-card-top-bar { height:4px; }
+.bar-occupied { background:linear-gradient(90deg,var(--gold),var(--gold-light)); }
+.bar-empty    { background:var(--parchment); }
+
+.room-card-body { padding:22px 22px 18px; }
+
+.room-header { display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px; }
+.room-number { font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:400;color:var(--espresso);line-height:1; }
+.room-number.empty-num { color:var(--parchment); }
+
+/* Type badge */
+.type-badge { font-family:'Cinzel',serif;font-size:10px;letter-spacing:.12em;padding:4px 10px;border:1px solid;font-weight:400; }
+.badge-rb  { color:#5a6e3a;border-color:#b8d49a;background:#f4fae8; }
+.badge-ro  { color:#3a5a6e;border-color:#9ab8d4;background:#eaf4fa; }
+.badge-ronp{ color:#6e5a3a;border-color:#d4b89a;background:#faf4e8; }
+.badge-usp { color:#6e3a5a;border-color:#d49ab8;background:#fae8f4; }
+
+.room-guest-name { font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:500;color:var(--espresso);margin-bottom:3px;letter-spacing:.02em; }
+.room-guest-empty { font-size:13px;color:var(--parchment);font-style:italic;margin-bottom:3px; }
+
+.room-divider { height:1px;background:var(--cream2);margin:14px 0; }
+
+.room-meta-row { display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px; }
+.meta-chip { display:flex;align-items:center;gap:5px;font-size:11px;color:var(--stone);font-weight:300; }
+.meta-chip .dot { width:4px;height:4px;border-radius:50%;background:var(--gold);flex-shrink:0; }
+
+/* Checkout flag */
+.checkout-flag { display:flex;align-items:center;gap:7px;margin-top:12px;padding:8px 12px;background:linear-gradient(135deg,#fff8ec,#fdf3e0);border:1px solid var(--gold-pale);border-left:3px solid var(--gold); }
+.checkout-flag-text { font-family:'Cinzel',serif;font-size:10px;letter-spacing:.15em;color:var(--gold);text-transform:uppercase; }
+
+.usp-days { display:inline-flex;align-items:center;gap:5px;margin-top:8px;font-size:11px;color:var(--stone); }
+.usp-days .dot { width:4px;height:4px;border-radius:50%;background:#c45a8a;flex-shrink:0; }
+
+/* Empty room label */
+.room-empty-label { padding:10px 0 4px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.15em;color:var(--parchment);text-transform:uppercase; }
+
+/* Search result highlight */
+.room-card.highlighted { background:#fffbf0 !important;box-shadow:0 0 0 2px var(--gold),0 8px 32px var(--shadow-deep) !important;z-index:10; }
+
+/* No result */
+.no-result { text-align:center;padding:60px 20px;color:var(--stone); }
+.no-result-title { font-family:'Cormorant Garamond',serif;font-size:24px;margin-bottom:8px;color:var(--bark); }
+.no-result-sub { font-size:13px;font-weight:300; }
+
+/* ========== MODAL ========== */
+.modal-overlay { display:none;position:fixed;inset:0;background:rgba(42,31,20,.6);z-index:500;align-items:center;justify-content:center;animation:fadeIn .25s; }
+.modal-overlay.show { display:flex; }
+.modal { background:var(--cream);width:520px;max-width:94vw;max-height:90vh;overflow-y:auto;animation:modalIn .35s cubic-bezier(.16,1,.3,1); }
+@keyframes modalIn { from{opacity:0;transform:translateY(24px) scale(.97)} to{opacity:1;transform:none} }
+.modal-header { background:var(--espresso);padding:24px 32px;display:flex;align-items:center;justify-content:space-between; }
+.modal-title { font-family:'Cinzel',serif;font-size:13px;letter-spacing:.2em;color:var(--gold);text-transform:uppercase; }
+.modal-close { background:none;border:none;color:var(--sand);font-size:20px;cursor:pointer;padding:0 4px;transition:color .2s; }
+.modal-close:hover { color:var(--gold-light); }
+.modal-body { padding:32px; }
+.modal-section { margin-bottom:28px; }
+.modal-section-title { font-family:'Cinzel',serif;font-size:10px;letter-spacing:.2em;color:var(--stone);text-transform:uppercase;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--parchment); }
+
+/* Guest list in modal */
+.guest-list { display:flex;flex-direction:column;gap:10px; }
+.guest-item { background:var(--white);border:1px solid var(--parchment);padding:14px 16px;display:flex;align-items:center;gap:14px;transition:all .2s; }
+.guest-item:hover { border-color:var(--sand); }
+.guest-room-num { font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--espresso);min-width:52px;font-weight:400; }
+.guest-info { flex:1; }
+.guest-name-modal { font-size:14px;font-weight:500;color:var(--espresso);margin-bottom:2px; }
+.guest-detail-modal { font-size:12px;color:var(--stone);font-weight:300; }
+.guest-actions { display:flex;gap:8px; }
+.btn-edit, .btn-del { padding:5px 10px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;cursor:pointer;border:1px solid;transition:all .2s; }
+.btn-edit { color:var(--gold);border-color:rgba(184,150,62,.4);background:transparent; }
+.btn-edit:hover { background:var(--gold-pale); }
+.btn-del { color:var(--occ);border-color:rgba(201,64,64,.3);background:transparent; }
+.btn-del:hover { background:#fdf0f0; }
+
+/* Add form */
+.add-form { display:flex;flex-direction:column;gap:14px; }
+.add-form .form-row-2 { display:grid;grid-template-columns:1fr 1fr;gap:12px; }
+.add-form .form-row-3 { display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px; }
+.form-group { display:flex;flex-direction:column;gap:6px; }
+.form-group label { font-family:'Cinzel',serif;font-size:9px;letter-spacing:.18em;color:var(--stone);text-transform:uppercase; }
+.form-group input, .form-group select {
+  padding:10px 12px;background:var(--white);border:1px solid var(--parchment);border-bottom:2px solid var(--parchment);
+  font-family:'Sarabun',sans-serif;font-size:13px;color:var(--espresso);outline:none;transition:all .2s;
+}
+.form-group input:focus, .form-group select:focus { border-bottom-color:var(--gold);background:#fffdf9; }
+.form-group select { cursor:pointer; }
+.usp-days-field { display:none; }
+.usp-days-field.show { display:flex; }
+
+.btn-add-guest { width:100%;padding:13px;background:var(--espresso);border:none;color:var(--gold-light);font-family:'Cinzel',serif;font-size:11px;letter-spacing:.2em;cursor:pointer;margin-top:4px;transition:all .25s; }
+.btn-add-guest:hover { background:var(--bark); }
+
+.modal-date-row { display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;padding:12px 16px;background:var(--gold-pale);border:1px solid rgba(184,150,62,.3); }
+.modal-date-label { font-family:'Cinzel',serif;font-size:10px;letter-spacing:.15em;color:var(--gold); }
+.modal-date-val { font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--espresso); }
+
+/* Edit modal */
+.edit-form { display:flex;flex-direction:column;gap:14px; }
+
+@media(max-width:860px){
+  #page-login{flex-direction:column}
+  .login-visual{min-height:240px}
+  .login-panel{width:100%;padding:36px 24px}
+  .login-panel::before{display:none}
+  .topbar{padding:0 16px}
+  .page-content{padding:32px 20px}
+  .floor-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+  .floor-hero{flex-wrap:wrap;padding:24px 20px}
+  .hero-floor-num{font-size:64px}
+  .search-row{flex-direction:column}
+}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+</style>
+</head>
+<body>
+
+<!-- PAGE 1: LOGIN -->
+<div class="page active" id="page-login">
+  <div class="login-visual">
+    <div class="login-visual-bg"></div>
+    <div class="login-visual-pattern"></div>
+    <div class="login-visual-content">
+      <div class="hotel-emblem"><span class="emblem-letter">C</span></div>
+      <div class="visual-hotel-name">Courtyard by Marriott</div>
+      <div class="visual-hotel-full">Phuket<br><em>Town</em></div>
+      <div class="visual-divider"></div>
+      <div class="visual-tagline">STAFF PORTAL · INTERNAL SYSTEM</div>
+    </div>
+  </div>
+  <div class="login-panel">
+    <div class="panel-badge"><span>Staff Access</span></div>
+    <div class="panel-heading">Welcome<br>Back</div>
+    <div class="panel-sub">กรุณาเข้าสู่ระบบด้วยข้อมูลพนักงาน</div>
+    <div class="field">
+      <label class="field-label">Employee ID / Email</label>
+      <div class="input-wrap">
+        <span class="field-icon">👤</span>
+        <input type="text" class="field-input" id="username" placeholder="EMP-0001 หรือ name@marriott.com" autocomplete="off">
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">Password</label>
+      <div class="input-wrap">
+        <span class="field-icon">🔑</span>
+        <input type="password" class="field-input" id="password" placeholder="••••••••">
+      </div>
+    </div>
+    <div class="form-row">
+      <label class="remember"><input type="checkbox"><span>Remember me</span></label>
+      <span class="forgot-link">Forgot password?</span>
+    </div>
+    <button class="btn-primary" id="loginBtn" onclick="handleLogin()">
+      <span class="btn-text">Sign In</span>
+    </button>
+    <div class="or-divider"><div class="or-line"></div><span class="or-text">OR</span><div class="or-line"></div></div>
+    <button class="btn-sso" onclick="handleLogin()"><span>🏢</span><span>Continue with Marriott SSO</span></button>
+    <div class="panel-footer">
+      <span class="panel-footer-text">© 2025 Courtyard by Marriott Phuket Town</span>
+      <div class="online-status"><div class="online-dot"></div><span>System Online</span></div>
+    </div>
+    <div class="success-overlay" id="successOverlay">
+      <div class="success-emblem">✦</div>
+      <div class="success-title">Welcome</div>
+      <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:.2em;color:var(--stone)">REDIRECTING TO PORTAL</div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 2: FLOOR SELECT -->
+<div class="page" id="page-floors">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-brand">
+        <div class="topbar-monogram">C</div>
+        <div class="topbar-name-group">
+          <div class="topbar-brand-main">Courtyard by Marriott</div>
+          <div class="topbar-brand-sub">Phuket Town · Staff Portal</div>
+        </div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="user-chip">
+        <div class="user-avatar">SJ</div>
+        <span class="user-name">Somchai J.</span>
+      </div>
+    </div>
+  </div>
+  <div class="page-content">
+    <div class="section-eyebrow"><div class="eyebrow-line"></div><span class="eyebrow-text">Building Directory</span></div>
+    <div class="page-title">Select Floor</div>
+    <div class="page-desc">Choose a floor to view guest information and room status.</div>
+    <div class="floor-grid" id="floorGrid"></div>
+  </div>
+</div>
+
+<!-- PAGE 3: ROOMS -->
+<div class="page" id="page-rooms">
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="back-btn" onclick="goToFloors()">← Back</button>
+      <div class="topbar-divider"></div>
+      <div class="topbar-brand">
+        <div class="topbar-monogram">C</div>
+        <div class="topbar-name-group">
+          <div class="topbar-brand-main">Courtyard by Marriott</div>
+          <div class="topbar-brand-sub">Phuket Town · Staff Portal</div>
+        </div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="user-chip">
+        <div class="user-avatar">SJ</div>
+        <span class="user-name">Somchai J.</span>
+      </div>
+    </div>
+  </div>
+  <div class="page-content">
+    <div class="breadcrumb">
+      <span class="bc-item" onclick="goToFloors()">All Floors</span>
+      <span class="bc-sep">›</span>
+      <span class="bc-current" id="bcFloor">Floor 5</span>
+    </div>
+    <div class="section-eyebrow"><div class="eyebrow-line"></div><span class="eyebrow-text" id="roomEyebrow">Floor 5</span></div>
+    <div class="page-title" id="roomTitle">Guest Room Status</div>
+    <div class="page-desc">ค้นหาด้วยเลขห้องหรือชื่อแขก</div>
+
+    <div class="search-row">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="search-input" id="searchInput"
+               placeholder="ค้นหาด้วยเลขห้อง เช่น 1102 หรือชื่อแขก เช่น Kannika..."
+               oninput="handleSearch()">
+      </div>
+      <button class="btn-manage" onclick="openManageModal()">✦ Manage Guests</button>
+    </div>
+
+    <div id="floorHero" class="floor-hero"></div>
+    <div class="room-grid" id="roomGrid"></div>
+  </div>
+</div>
+
+<!-- MANAGE MODAL -->
+<div class="modal-overlay" id="manageModal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Manage Guests · <span id="modalFloorLabel">Floor 5</span></span>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-date-row">
+        <span class="modal-date-label">Today's Date</span>
+        <span class="modal-date-val" id="todayDateLabel"></span>
+      </div>
+
+      <!-- Add new guest -->
+      <div class="modal-section">
+        <div class="modal-section-title">Add New Guest</div>
+        <div class="add-form">
+          <div class="form-row-2">
+            <div class="form-group">
+              <label>Room Number</label>
+              <input type="text" id="f_room" placeholder="e.g. 1102">
+            </div>
+            <div class="form-group">
+              <label>Guest Name</label>
+              <input type="text" id="f_name" placeholder="e.g. Kannika">
+            </div>
+          </div>
+          <div class="form-row-3">
+            <div class="form-group">
+              <label>No. of Guests</label>
+              <input type="number" id="f_count" placeholder="1" min="1" max="10">
+            </div>
+            <div class="form-group">
+              <label>Room Type</label>
+              <select id="f_type" onchange="toggleUspField()">
+                <option value="">Select...</option>
+                <option value="RB">RB – Bed & Breakfast</option>
+                <option value="RO">RO – Room Only</option>
+                <option value="RO(NP)">RO(NP) – No Prepayment</option>
+                <option value="USP">USP – Upsell Breakfast</option>
+              </select>
+            </div>
+            <div class="form-group usp-days-field" id="uspDaysField">
+              <label>Breakfast Days</label>
+              <input type="number" id="f_usp_days" placeholder="Days" min="1">
+            </div>
+          </div>
+          <div class="form-row-2">
+            <div class="form-group">
+              <label>Check-in Date</label>
+              <input type="date" id="f_cin">
+            </div>
+            <div class="form-group">
+              <label>Check-out Date</label>
+              <input type="date" id="f_cout">
+            </div>
+          </div>
+          <button class="btn-add-guest" onclick="addGuest()">+ Add Guest</button>
+        </div>
+      </div>
+
+      <!-- Current guests list -->
+      <div class="modal-section">
+        <div class="modal-section-title">Current Guests on This Floor</div>
+        <div class="guest-list" id="guestListModal"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Edit Guest</span>
+      <button class="modal-close" onclick="closeEditModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="e_orig_room">
+      <div class="edit-form">
+        <div class="form-row-2">
+          <div class="form-group">
+            <label>Room Number</label>
+            <input type="text" id="e_room">
+          </div>
+          <div class="form-group">
+            <label>Guest Name</label>
+            <input type="text" id="e_name">
+          </div>
+        </div>
+        <div class="form-row-3">
+          <div class="form-group">
+            <label>No. of Guests</label>
+            <input type="number" id="e_count" min="1" max="10">
+          </div>
+          <div class="form-group">
+            <label>Room Type</label>
+            <select id="e_type" onchange="toggleEditUspField()">
+              <option value="RB">RB – Bed & Breakfast</option>
+              <option value="RO">RO – Room Only</option>
+              <option value="RO(NP)">RO(NP) – No Prepayment</option>
+              <option value="USP">USP – Upsell Breakfast</option>
+            </select>
+          </div>
+          <div class="form-group" id="editUspDaysField" style="display:none">
+            <label>Breakfast Days</label>
+            <input type="number" id="e_usp_days" min="1">
+          </div>
+        </div>
+        <div class="form-row-2">
+          <div class="form-group">
+            <label>Check-in Date</label>
+            <input type="date" id="e_cin">
+          </div>
+          <div class="form-group">
+            <label>Check-out Date</label>
+            <input type="date" id="e_cout">
+          </div>
+        </div>
+        <button class="btn-add-guest" onclick="saveEdit()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+//  DATA STORE
+// ============================================================
+const floors = [5,6,7,8,9,10,11,12,14,15,16,17,18];
+
+const floorData = {
+  5:{icon:'🎯',name:'Standard Floor'},   6:{icon:'💼',name:'Standard Floor'},
+  7:{icon:'📊',name:'Standard Floor'},   8:{icon:'🖥️',name:'Standard Floor'},
+  9:{icon:'🔬',name:'Standard Floor'},  10:{icon:'📋',name:'Standard Floor'},
+ 11:{icon:'🎨',name:'Standard Floor'},  12:{icon:'📞',name:'Standard Floor'},
+ 14:{icon:'🏛️',name:'Deluxe Floor'},    15:{icon:'🔑',name:'Deluxe Floor'},
+ 16:{icon:'📡',name:'Deluxe Floor'},    17:{icon:'💡',name:'Executive Floor'},
+ 18:{icon:'🌟',name:'Executive Floor'}
+};
+
+// rooms per floor: 10 rooms
+function roomNumbers(floor) {
+  return Array.from({length:10}, (_,i) => `${floor}${String(i+1).padStart(2,'0')}`);
+}
+
+// Guest data store: key = roomNumber, value = guest object
+let guestData = {}; // loaded from localStorage or defaults
+
+function todayStr() {
+  return new Date().toISOString().split('T')[0];
+}
+
+function loadData() {
+  try {
+    const saved = localStorage.getItem('cm_guests');
+    if (saved) guestData = JSON.parse(saved);
+  } catch(e) { guestData = {}; }
+}
+
+function saveData() {
+  try { localStorage.setItem('cm_guests', JSON.stringify(guestData)); } catch(e){}
+}
+
+loadData();
+
+// ============================================================
+//  LOGIN
+// ============================================================
+function handleLogin() {
+  const btn = document.getElementById('loginBtn');
+  const u = document.getElementById('username').value;
+  const p = document.getElementById('password').value;
+  if (!u || !p) {
+    const panel = document.querySelector('.login-panel');
+    panel.style.animation = 'shake .4s ease';
+    setTimeout(() => panel.style.animation = '', 400);
+    return;
+  }
+  btn.classList.add('loading');
+  setTimeout(() => {
+    btn.classList.remove('loading');
+    document.getElementById('successOverlay').classList.add('show');
+    setTimeout(() => goToFloors(), 1800);
+  }, 1400);
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('page-login').classList.contains('active')) handleLogin();
+});
+
+// ============================================================
+//  NAVIGATION
+// ============================================================
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function goToFloors() { buildFloorGrid(); showPage('page-floors'); }
+
+let currentFloor = null;
+function goToRooms(floor) {
+  currentFloor = floor;
+  document.getElementById('searchInput').value = '';
+  buildRoomPage(floor, null);
+  showPage('page-rooms');
+}
+
+// ============================================================
+//  FLOOR GRID
+// ============================================================
+function buildFloorGrid() {
+  const grid = document.getElementById('floorGrid');
+  grid.innerHTML = '';
+  floors.forEach((floor, i) => {
+    const rooms = roomNumbers(floor);
+    const occupied = rooms.filter(r => guestData[r]).length;
+    const dots = rooms.map(r => `<div class="floor-dot ${guestData[r]?'dot-has':'dot-none'}"></div>`).join('');
+    const card = document.createElement('div');
+    card.className = 'floor-card';
+    card.style.animationDelay = (i*.04)+'s';
+    card.innerHTML = `
+      <div class="floor-icon-wrap">${floorData[floor].icon}</div>
+      <div class="floor-num">${floor}</div>
+      <div class="floor-label">${floorData[floor].name}</div>
+      <div class="floor-dots">${dots}</div>
+      <div class="floor-avail-text">${occupied} guests checked in</div>
+      <span class="floor-arrow">→</span>`;
+    card.onclick = () => goToRooms(floor);
+    grid.appendChild(card);
+  });
+}
+
+// ============================================================
+//  ROOM PAGE
+// ============================================================
+function buildRoomPage(floor, searchTerm) {
+  const fd = floorData[floor];
+  document.getElementById('bcFloor').textContent = `Floor ${floor}`;
+  document.getElementById('roomEyebrow').textContent = `Floor ${floor} · ${fd.name}`;
+  document.getElementById('roomTitle').textContent = 'Guest Room Status';
+
+  const rooms = roomNumbers(floor);
+  const occupied = rooms.filter(r => guestData[r]).length;
+
+  document.getElementById('floorHero').innerHTML = `
+    <div class="hero-floor-num">${floor}</div>
+    <div class="hero-info">
+      <div class="hero-eyebrow">Courtyard by Marriott Phuket Town</div>
+      <div class="hero-title">Floor ${floor} · ${fd.name}</div>
+      <div class="hero-sub">10 rooms total</div>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-block">
+        <div class="stat-num has">${occupied}</div>
+        <div class="stat-label">Occupied</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-num empty">${10-occupied}</div>
+        <div class="stat-label">Vacant</div>
+      </div>
+    </div>`;
+
+  renderRoomGrid(floor, searchTerm);
+}
+
+function renderRoomGrid(floor, searchTerm) {
+  const grid = document.getElementById('roomGrid');
+  grid.innerHTML = '';
+  const rooms = roomNumbers(floor);
+  const today = todayStr();
+  const term = searchTerm ? searchTerm.toLowerCase().trim() : '';
+
+  let anyMatch = false;
+
+  rooms.forEach((roomNum, i) => {
+    const g = guestData[roomNum];
+    const card = document.createElement('div');
+    card.className = 'room-card';
+    card.style.animationDelay = (i*.04)+'s';
+
+    // highlight logic
+    let isHighlighted = false;
+    if (term) {
+      const nameMatch = g && g.name.toLowerCase().includes(term);
+      const roomMatch = roomNum.toLowerCase().includes(term);
+      if (nameMatch || roomMatch) { isHighlighted = true; anyMatch = true; }
+    }
+    if (isHighlighted) card.classList.add('highlighted');
+
+    if (!g) {
+      // VACANT ROOM
+      card.innerHTML = `
+        <div class="room-card-top-bar bar-empty"></div>
+        <div class="room-card-body">
+          <div class="room-header">
+            <div class="room-number empty-num">${roomNum}</div>
+          </div>
+          <div class="room-guest-empty">Vacant</div>
+          <div class="room-empty-label">No guest assigned</div>
+        </div>`;
+    } else {
+      // OCCUPIED ROOM
+      const isCheckout = g.cout === today;
+      const badgeClass = {'RB':'badge-rb','RO':'badge-ro','RO(NP)':'badge-ronp','USP':'badge-usp'}[g.type] || 'badge-ro';
+      const typeDesc = {
+        'RB':'Bed & Breakfast',
+        'RO':'Room Only (w/ Deposit)',
+        'RO(NP)':'Room Only (No Prepayment)',
+        'USP':'Upsell Breakfast Package'
+      }[g.type] || g.type;
+
+      const uspNote = g.type === 'USP' && g.uspDays
+        ? `<div class="usp-days"><span class="dot"></span>Purchased breakfast: <strong>${g.uspDays} day${g.uspDays>1?'s':''}</strong></div>`
+        : '';
+
+      const coFlag = isCheckout
+        ? `<div class="checkout-flag"><span>🔔</span><span class="checkout-flag-text">Check-out Today</span></div>` : '';
+
+      const cinFmt = g.cin ? formatDate(g.cin) : '—';
+      const coutFmt = g.cout ? formatDate(g.cout) : '—';
+
+      card.innerHTML = `
+        <div class="room-card-top-bar bar-occupied"></div>
+        <div class="room-card-body">
+          <div class="room-header">
+            <div class="room-number">${roomNum}</div>
+            <span class="type-badge ${badgeClass}">${g.type}</span>
+          </div>
+          <div class="room-guest-name">${g.name}</div>
+          <div class="room-divider"></div>
+          <div class="room-meta-row">
+            <div class="meta-chip"><span class="dot"></span>${g.count} Guest${g.count>1?'s':''}</div>
+            <div class="meta-chip"><span class="dot"></span>${typeDesc}</div>
+          </div>
+          <div class="room-meta-row">
+            <div class="meta-chip"><span class="dot"></span>CI: ${cinFmt}</div>
+            <div class="meta-chip"><span class="dot"></span>CO: ${coutFmt}</div>
+          </div>
+          ${uspNote}
+          ${coFlag}
+          <div class="card-actions">
+            <button class="card-action-btn edit-btn" onclick="openEdit('${roomNum}')">✎ Edit</button>
+            <button class="card-action-btn del-btn"  onclick="deleteGuestCard('${roomNum}')">✕ Remove</button>
+          </div>
+        </div>`;
+    }
+    grid.appendChild(card);
+  });
+
+  // If searching and no match
+  if (term && !anyMatch) {
+    grid.innerHTML = `
+      <div class="no-result" style="grid-column:1/-1">
+        <div class="no-result-title">No Results Found</div>
+        <div class="no-result-sub">ไม่พบข้อมูลสำหรับ "<strong>${searchTerm}</strong>" ในชั้น ${floor}</div>
+      </div>`;
+  }
+
+  // Scroll to first highlighted
+  if (term && anyMatch) {
+    setTimeout(() => {
+      const first = grid.querySelector('.highlighted');
+      if (first) first.scrollIntoView({behavior:'smooth', block:'center'});
+    }, 100);
+  }
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '—';
+  const [y,m,d] = dateStr.split('-');
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${d} ${months[parseInt(m)-1]} ${y}`;
+}
+
+// ============================================================
+//  SEARCH
+// ============================================================
+function handleSearch() {
+  const term = document.getElementById('searchInput').value;
+  if (currentFloor) renderRoomGrid(currentFloor, term);
+}
+
+// ============================================================
+//  MANAGE MODAL
+// ============================================================
+function openManageModal() {
+  document.getElementById('modalFloorLabel').textContent = `Floor ${currentFloor}`;
+  document.getElementById('todayDateLabel').textContent = formatDate(todayStr());
+  // Pre-fill room prefix
+  document.getElementById('f_room').value = currentFloor;
+  renderGuestListModal();
+  document.getElementById('manageModal').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('manageModal').classList.remove('show');
+  clearAddForm();
+}
+
+function clearAddForm() {
+  ['f_room','f_name','f_count','f_cout','f_usp_days'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('f_type').value = '';
+  document.getElementById('f_cin').value = todayStr();
+  document.getElementById('uspDaysField').classList.remove('show');
+}
+
+function toggleUspField() {
+  const t = document.getElementById('f_type').value;
+  document.getElementById('uspDaysField').classList.toggle('show', t === 'USP');
+}
+
+function toggleEditUspField() {
+  const t = document.getElementById('e_type').value;
+  document.getElementById('editUspDaysField').style.display = t === 'USP' ? 'flex' : 'none';
+}
+
+function renderGuestListModal() {
+  const list = document.getElementById('guestListModal');
+  const rooms = roomNumbers(currentFloor);
+  const today = todayStr();
+  const occupied = rooms.filter(r => guestData[r]);
+  if (!occupied.length) {
+    list.innerHTML = '<div style="font-size:13px;color:var(--sand);padding:12px 0">No guests on this floor yet.</div>';
+    return;
+  }
+  list.innerHTML = occupied.map(roomNum => {
+    const g = guestData[roomNum];
+    const isCheckout = g.cout === today;
+    return `
+      <div class="guest-item">
+        <div class="guest-room-num">${roomNum}</div>
+        <div class="guest-info">
+          <div class="guest-name-modal">${g.name}</div>
+          <div class="guest-detail-modal">${g.count} guest${g.count>1?'s':''} · ${g.type}${g.type==='USP'&&g.uspDays?' ('+g.uspDays+'d)':''} ${isCheckout?'· <span style="color:var(--gold);font-weight:500">Check-out Today</span>':''}</div>
+        </div>
+        <div class="guest-actions">
+          <button class="btn-edit" onclick="openEdit('${roomNum}')">Edit</button>
+          <button class="btn-del" onclick="deleteGuest('${roomNum}')">Remove</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function addGuest() {
+  const room  = document.getElementById('f_room').value.trim();
+  const name  = document.getElementById('f_name').value.trim();
+  const count = parseInt(document.getElementById('f_count').value) || 1;
+  const type  = document.getElementById('f_type').value;
+  const cin   = document.getElementById('f_cin').value || todayStr();
+  const cout  = document.getElementById('f_cout').value;
+  const uspDays = type === 'USP' ? parseInt(document.getElementById('f_usp_days').value)||1 : null;
+
+  if (!room || !name || !type) {
+    alert('Please fill in Room Number, Guest Name, and Room Type.');
+    return;
+  }
+  // validate room belongs to current floor
+  const prefix = String(currentFloor);
+  if (!room.startsWith(prefix)) {
+    alert(`Room number should start with ${prefix} for Floor ${currentFloor}.`);
+    return;
+  }
+
+  guestData[room] = { name, count, type, cin, cout, uspDays };
+  saveData();
+  renderGuestListModal();
+  buildRoomPage(currentFloor, document.getElementById('searchInput').value);
+  buildFloorGrid();
+  clearAddForm();
+  document.getElementById('f_cin').value = todayStr();
+}
+
+function deleteGuest(roomNum) {
+  if (!confirm(`Remove guest from room ${roomNum}?`)) return;
+  delete guestData[roomNum];
+  saveData();
+  renderGuestListModal();
+  buildRoomPage(currentFloor, document.getElementById('searchInput').value);
+  buildFloorGrid();
+}
+
+// Delete directly from room card (with fade animation)
+function deleteGuestCard(roomNum) {
+  const guestName = guestData[roomNum]?.name || roomNum;
+  if (!confirm(`Remove "${guestName}" from room ${roomNum}?`)) return;
+
+  // Find and animate the card out
+  const cards = document.querySelectorAll('.room-card');
+  let targetCard = null;
+  cards.forEach(c => {
+    if (c.querySelector('.room-number')?.textContent === roomNum) targetCard = c;
+  });
+
+  if (targetCard) {
+    targetCard.style.transition = 'opacity .3s, transform .3s';
+    targetCard.style.opacity = '0';
+    targetCard.style.transform = 'scale(.96)';
+    setTimeout(() => {
+      delete guestData[roomNum];
+      saveData();
+      buildRoomPage(currentFloor, document.getElementById('searchInput').value);
+      buildFloorGrid();
+    }, 280);
+  } else {
+    delete guestData[roomNum];
+    saveData();
+    buildRoomPage(currentFloor, document.getElementById('searchInput').value);
+    buildFloorGrid();
+  }
+}
+
+// ============================================================
+//  EDIT MODAL
+// ============================================================
+function openEdit(roomNum) {
+  const g = guestData[roomNum];
+  if (!g) return;
+  document.getElementById('e_orig_room').value = roomNum;
+  document.getElementById('e_room').value = roomNum;
+  document.getElementById('e_name').value = g.name;
+  document.getElementById('e_count').value = g.count;
+  document.getElementById('e_type').value = g.type;
+  document.getElementById('e_cin').value = g.cin || '';
+  document.getElementById('e_cout').value = g.cout || '';
+  document.getElementById('e_usp_days').value = g.uspDays || '';
+  document.getElementById('editUspDaysField').style.display = g.type === 'USP' ? 'flex' : 'none';
+  document.getElementById('editModal').classList.add('show');
+}
+
+function closeEditModal() {
+  document.getElementById('editModal').classList.remove('show');
+}
+
+function saveEdit() {
+  const origRoom = document.getElementById('e_orig_room').value;
+  const room   = document.getElementById('e_room').value.trim();
+  const name   = document.getElementById('e_name').value.trim();
+  const count  = parseInt(document.getElementById('e_count').value) || 1;
+  const type   = document.getElementById('e_type').value;
+  const cin    = document.getElementById('e_cin').value;
+  const cout   = document.getElementById('e_cout').value;
+  const uspDays= type === 'USP' ? parseInt(document.getElementById('e_usp_days').value)||1 : null;
+
+  if (!room || !name || !type) { alert('Please fill all required fields.'); return; }
+
+  if (origRoom !== room) delete guestData[origRoom];
+  guestData[room] = { name, count, type, cin, cout, uspDays };
+  saveData();
+  closeEditModal();
+  renderGuestListModal();
+  buildRoomPage(currentFloor, document.getElementById('searchInput').value);
+  buildFloorGrid();
+}
+
+// Close modals on overlay click
+document.getElementById('manageModal').addEventListener('click', function(e){
+  if (e.target === this) closeModal();
+});
+document.getElementById('editModal').addEventListener('click', function(e){
+  if (e.target === this) closeEditModal();
+});
+
+// Init date fields
+window.addEventListener('load', () => {
+  document.getElementById('f_cin').value = todayStr();
+});
+</script>
+</body>
+</html>
