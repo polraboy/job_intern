@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Krua Talad Yai · Check Guest</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --primary: #2c5f8a;
+  --primary-dark: #1e4266;
+  --primary-light: #e8f1f8;
+  --accent: #4caf7d;
+  --accent-dark: #3a9168;
+  --gold: #c8960a;
+  --gold-bg: #fdf8ec;
+  --text: #1a1a2e;
+  --text2: #4a4a6a;
+  --text3: #8888aa;
+  --border: #dde3ec;
+  --bg: #f5f7fa;
+  --white: #ffffff;
+  --red: #d94040;
+  --red-bg: #fdf0f0;
+  --shadow: 0 4px 16px rgba(0,0,0,0.10);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.14);
+}
+
+body {
+  font-family: 'IBM Plex Sans Thai', 'IBM Plex Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* ── PAGE SYSTEM ── */
+.page { display:none; min-height:100vh; flex-direction:column; }
+.page.active { display:flex; }
+
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(16px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+@keyframes spin { to { transform:rotate(360deg); } }
+@keyframes shake {
+  0%,100%{transform:translateX(0)}
+  25%{transform:translateX(-8px)}
+  75%{transform:translateX(8px)}
+}
+
+/* ══════════════════════════════════════════
+   LOGIN
+══════════════════════════════════════════ */
+#page-login {
+  background:#f0f4f8;
+  align-items:center; justify-content:center;
+  padding:24px 16px;
+}
+.login-card {
+  background:var(--white); border-radius:12px;
+  box-shadow:var(--shadow-lg);
+  padding:40px 36px 36px;
+  width:100%; max-width:400px;
+  text-align:center;
+  animation:fadeUp .5s ease both;
+}
+.login-logo {
+  width:80px; height:80px;
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  margin:0 auto 20px; font-size:32px;
+  box-shadow:0 4px 16px rgba(44,95,138,.3);
+}
+.login-title { font-size:20px; font-weight:600; color:var(--primary-dark); margin-bottom:4px; line-height:1.3; }
+.login-sub   { font-size:13px; color:var(--text3); margin-bottom:28px; }
+.login-field { margin-bottom:16px; text-align:left; }
+.login-field label { display:block; font-size:13px; font-weight:600; color:var(--text2); margin-bottom:6px; }
+.login-input-wrap { position:relative; }
+.login-input {
+  width:100%; padding:11px 14px;
+  border:1.5px solid var(--border); border-radius:8px;
+  font-family:inherit; font-size:15px; color:var(--text);
+  background:var(--bg); outline:none; transition:all .2s;
+}
+.login-input:focus { border-color:var(--primary); background:var(--white); box-shadow:0 0 0 3px rgba(44,95,138,.12); }
+.login-input::placeholder { color:var(--text3); }
+.pw-toggle {
+  position:absolute; right:12px; top:50%; transform:translateY(-50%);
+  background:none; border:none; cursor:pointer; color:var(--text3); font-size:16px;
+}
+.btn-login {
+  width:100%; padding:13px;
+  background:var(--accent); border:none; border-radius:8px;
+  color:var(--white); font-family:inherit; font-size:16px; font-weight:600;
+  cursor:pointer; margin-top:8px; transition:all .2s; position:relative; overflow:hidden;
+}
+.btn-login:hover { background:var(--accent-dark); box-shadow:0 4px 16px rgba(74,175,125,.35); }
+.btn-login:active { transform:scale(.98); }
+.btn-login.loading .btn-text { opacity:0; }
+.btn-login.loading::after {
+  content:''; position:absolute; width:20px; height:20px;
+  border:2px solid rgba(255,255,255,.4); border-top-color:white;
+  border-radius:50%; top:50%; left:50%; margin:-10px 0 0 -10px;
+  animation:spin .7s linear infinite;
+}
+.login-links { margin-top:20px; }
+.login-link { display:block; font-size:13px; color:var(--primary); cursor:pointer; text-decoration:underline; text-underline-offset:2px; }
+.login-footer { margin-top:24px; padding-top:16px; border-top:1px solid var(--border); font-size:12px; color:var(--text3); }
+
+/* ══════════════════════════════════════════
+   TOPBAR
+══════════════════════════════════════════ */
+.topbar {
+  background:var(--primary-dark); height:60px;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 24px; position:sticky; top:0; z-index:100;
+  box-shadow:0 2px 8px rgba(0,0,0,.2);
+}
+.topbar-left { display:flex; align-items:center; gap:14px; }
+.topbar-logo {
+  width:34px; height:34px; background:rgba(255,255,255,.15);
+  border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-size:16px; flex-shrink:0;
+}
+.topbar-name { font-size:15px; font-weight:600; color:var(--white); }
+.topbar-sub  { font-size:11px; color:rgba(255,255,255,.55); }
+.topbar-right { display:flex; align-items:center; gap:10px; }
+.btn-back {
+  display:flex; align-items:center; gap:6px;
+  background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2);
+  border-radius:6px; color:rgba(255,255,255,.8); font-family:inherit;
+  font-size:13px; padding:6px 12px; cursor:pointer; transition:all .2s;
+}
+.btn-back:hover { background:rgba(255,255,255,.2); color:white; }
+.user-tag {
+  background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.18);
+  border-radius:20px; padding:5px 12px 5px 6px;
+  display:flex; align-items:center; gap:8px;
+}
+.user-av {
+  width:26px; height:26px; background:var(--accent); border-radius:50%;
+  display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:600; color:white;
+}
+.user-nm { font-size:12px; color:rgba(255,255,255,.85); }
+
+/* ══════════════════════════════════════════
+   PAGE BODY
+══════════════════════════════════════════ */
+.page-body {
+  flex:1; padding:28px 24px;
+  max-width:1100px; width:100%; margin:0 auto;
+  animation:fadeUp .4s ease both .05s;
+}
+
+/* ── FLOOR SELECT ── */
+.section-title { font-size:22px; font-weight:600; color:var(--primary-dark); margin-bottom:4px; }
+.section-desc  { font-size:13px; color:var(--text3); margin-bottom:24px; }
+.floor-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(148px,1fr)); gap:12px; }
+.floor-card {
+  background:var(--white); border:1.5px solid var(--border); border-radius:10px;
+  padding:20px 16px 16px; cursor:pointer; transition:all .2s; position:relative;
+  animation:fadeUp .4s ease both;
+}
+.floor-card:hover { border-color:var(--primary); box-shadow:var(--shadow); transform:translateY(-2px); }
+.floor-card-num { font-size:38px; font-weight:600; color:var(--primary-dark); line-height:1; margin-bottom:4px; }
+.floor-card-lbl { font-size:11px; color:var(--text3); margin-bottom:14px; font-weight:500; }
+.floor-dots { display:flex; flex-wrap:wrap; gap:3px; margin-bottom:8px; }
+.fdot { width:8px; height:8px; border-radius:2px; }
+.fdot-occ { background:var(--primary-light); border:1px solid var(--primary); }
+.fdot-emp { background:#eee; border:1px solid #ddd; }
+.floor-occ-txt { font-size:11px; color:var(--text3); }
+.floor-arrow { position:absolute; right:14px; top:50%; transform:translateY(-50%); color:var(--border); font-size:18px; transition:all .2s; }
+.floor-card:hover .floor-arrow { color:var(--primary); transform:translateY(-50%) translateX(3px); }
+
+/* ── FLOOR SUMMARY BAR ── */
+.breadcrumb { display:flex; align-items:center; gap:8px; margin-bottom:16px; }
+.bc { font-size:13px; color:var(--text3); cursor:pointer; transition:color .15s; }
+.bc:hover { color:var(--primary); }
+.bc-sep { color:var(--border); }
+.bc-cur { font-size:13px; color:var(--primary); font-weight:500; }
+
+.search-row { display:flex; gap:10px; margin-bottom:24px; }
+.search-wrap { flex:1; position:relative; }
+.search-input {
+  width:100%; padding:11px 14px 11px 40px;
+  border:1.5px solid var(--border); border-radius:8px;
+  font-family:inherit; font-size:15px; color:var(--text);
+  background:var(--white); outline:none; transition:all .2s;
+}
+.search-input:focus { border-color:var(--primary); box-shadow:0 0 0 3px rgba(44,95,138,.1); }
+.search-input::placeholder { color:var(--text3); }
+.search-icon { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text3); font-size:16px; pointer-events:none; }
+
+.floor-summary {
+  background:var(--primary-dark); border-radius:10px;
+  padding:20px 24px; margin-bottom:24px;
+  display:flex; align-items:center; gap:28px; flex-wrap:wrap;
+}
+.fs-floor-num { font-size:56px; font-weight:600; color:rgba(255,255,255,.18); line-height:1; flex-shrink:0; }
+.fs-info { flex:1; min-width:120px; }
+.fs-title { font-size:18px; font-weight:600; color:white; margin-bottom:3px; }
+.fs-sub   { font-size:12px; color:rgba(255,255,255,.5); }
+.fs-stats { display:flex; }
+.fs-stat  { text-align:center; padding:0 20px; border-left:1px solid rgba(255,255,255,.1); }
+.fs-stat:first-child { border-left:none; padding-left:0; }
+.fs-num   { font-size:28px; font-weight:600; line-height:1; margin-bottom:2px; }
+.fs-num-occ { color:#7ec8f4; }
+.fs-num-co  { color:#ffd080; }
+.fs-num-vac { color:rgba(255,255,255,.22); }
+.fs-lbl   { font-size:11px; color:rgba(255,255,255,.45); font-weight:500; }
+
+/* ── ROOM GRID ── */
+.room-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px; }
+
+/* Room card — CLICKABLE */
+.room-card {
+  background:var(--white); border:1.5px solid var(--border);
+  border-radius:10px; overflow:hidden;
+  cursor:pointer; /* always clickable */
+  transition:all .2s; animation:fadeUp .35s ease both; position:relative;
+  user-select:none;
+}
+.room-card:hover { box-shadow:var(--shadow); transform:translateY(-2px); }
+.room-card:active { transform:scale(.98); }
+.room-card.highlighted { border-color:var(--primary); box-shadow:0 0 0 3px rgba(44,95,138,.18),var(--shadow); z-index:5; }
+
+/* Vacant card hover = green tint hint to add */
+.room-card.vac:hover { border-color:var(--accent); box-shadow:0 0 0 3px rgba(76,175,125,.15),var(--shadow); }
+
+.rc-strip { height:4px; }
+.strip-occ { background:var(--primary); }
+.strip-co  { background:var(--gold); }
+.strip-vac { background:#e0e0e0; }
+
+.rc-body { padding:14px 16px 16px; }
+
+.rc-top { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:8px; }
+.rc-num { font-size:24px; font-weight:600; color:var(--text); line-height:1; }
+.rc-num.vac-c { color:#ccc; }
+
+.type-tag {
+  font-size:11px; font-weight:600; padding:3px 9px;
+  border-radius:20px; border:1.5px solid; white-space:nowrap;
+}
+.tag-rb   { color:#2d6a1e; background:#edf7e8; border-color:#9dcc85; }
+.tag-ro   { color:#1a4a7a; background:#e8f1fb; border-color:#85aacc; }
+.tag-ronp { color:#7a4a1a; background:#faf0e8; border-color:#ccaa85; }
+.tag-usp  { color:#6a1a6a; background:#f8e8f8; border-color:#cc85cc; }
+
+.rc-date   { font-size:11px; color:var(--text3); margin-bottom:4px; }
+.rc-name   { font-size:14px; font-weight:600; color:var(--text); margin-bottom:8px; line-height:1.3; }
+.rc-vacant { font-size:13px; color:#bbb; font-style:italic; margin-bottom:8px; }
+
+.rc-divider { height:1px; background:var(--bg); margin:10px 0; }
+
+.rc-meta { display:flex; flex-wrap:wrap; gap:5px; }
+.rc-chip {
+  display:flex; align-items:center; gap:4px;
+  background:var(--bg); border:1px solid var(--border); border-radius:5px;
+  padding:3px 8px; font-size:12px; color:var(--text2);
+}
+
+.co-flag {
+  margin-top:10px; background:var(--gold-bg);
+  border:1px solid #e8c840; border-left:3px solid var(--gold);
+  border-radius:0 6px 6px 0; padding:6px 10px;
+  display:flex; align-items:center; gap:6px;
+  font-size:12px; font-weight:600; color:var(--gold);
+}
+.usp-info { margin-top:7px; font-size:12px; color:#7a1a7a; display:flex; align-items:center; gap:4px; }
+
+/* "tap to add" hint for vacant */
+.rc-add-hint {
+  margin-top:10px; display:flex; align-items:center; gap:6px;
+  font-size:11px; color:var(--accent); font-weight:500; opacity:.7;
+}
+
+/* no result */
+.no-result { grid-column:1/-1; text-align:center; padding:48px 20px; }
+.no-result-title { font-size:18px; font-weight:600; color:var(--text2); margin-bottom:6px; }
+.no-result-sub { font-size:13px; color:var(--text3); }
+
+/* ══════════════════════════════════════════
+   MODAL  (single unified modal)
+══════════════════════════════════════════ */
+.overlay {
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,.45); z-index:500;
+  align-items:flex-end; justify-content:center;
+  padding:0;
+}
+.overlay.show { display:flex; }
+
+/* Sheet slides up from bottom on mobile, centered on desktop */
+.sheet {
+  background:var(--white); width:100%; max-width:520px;
+  border-radius:16px 16px 0 0;
+  max-height:92vh; overflow-y:auto;
+  box-shadow:0 -8px 40px rgba(0,0,0,.2);
+  animation:sheetIn .3s cubic-bezier(.16,1,.3,1);
+  position:relative;
+}
+@keyframes sheetIn { from{transform:translateY(100%)} to{transform:translateY(0)} }
+
+@media(min-width:600px){
+  .overlay { align-items:center; padding:16px; }
+  .sheet { border-radius:14px; }
+  @keyframes sheetIn { from{opacity:0;transform:translateY(24px) scale(.97)} to{opacity:1;transform:none} }
+}
+
+/* drag handle */
+.sheet-handle {
+  width:40px; height:4px; background:#ddd; border-radius:2px;
+  margin:12px auto 0; position:sticky; top:0;
+}
+
+.sheet-head {
+  padding:16px 20px 14px;
+  display:flex; align-items:center; justify-content:space-between;
+  border-bottom:1px solid var(--border);
+  position:sticky; top:0; background:var(--white); z-index:2;
+}
+.sheet-title { font-size:16px; font-weight:600; color:var(--text); }
+.sheet-room-num { font-size:22px; font-weight:600; color:var(--primary-dark); }
+.sheet-close {
+  background:var(--bg); border:none; border-radius:50%;
+  width:32px; height:32px; font-size:16px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  color:var(--text3); transition:all .15s; flex-shrink:0;
+}
+.sheet-close:hover { background:var(--border); color:var(--text); }
+
+.sheet-body { padding:20px; }
+
+/* GUEST INFO VIEW */
+.gi-view { display:flex; flex-direction:column; gap:12px; }
+
+.info-block {
+  background:var(--bg); border-radius:8px;
+  padding:14px 16px;
+}
+.info-label { font-size:11px; font-weight:600; color:var(--text3); margin-bottom:4px; letter-spacing:.04em; text-transform:uppercase; }
+.info-val   { font-size:15px; font-weight:500; color:var(--text); }
+.info-val.big { font-size:18px; font-weight:600; }
+.info-grid  { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+
+.co-alert {
+  background:var(--gold-bg); border:1.5px solid #e8c840;
+  border-radius:8px; padding:12px 16px;
+  display:flex; align-items:center; gap:10px;
+}
+.co-alert-icon { font-size:22px; }
+.co-alert-text { font-size:14px; font-weight:600; color:var(--gold); }
+
+.sheet-actions { display:flex; gap:10px; margin-top:4px; }
+.btn-sheet-edit {
+  flex:1; padding:12px;
+  background:var(--primary); border:none; border-radius:8px;
+  color:white; font-family:inherit; font-size:14px; font-weight:600;
+  cursor:pointer; transition:all .2s;
+}
+.btn-sheet-edit:hover { background:var(--primary-dark); }
+.btn-sheet-del {
+  padding:12px 20px;
+  background:var(--white); border:1.5px solid rgba(217,64,64,.4);
+  border-radius:8px; color:var(--red); font-family:inherit;
+  font-size:14px; font-weight:600; cursor:pointer; transition:all .2s;
+}
+.btn-sheet-del:hover { background:var(--red-bg); border-color:var(--red); }
+
+/* FORM */
+.form-section { display:flex; flex-direction:column; gap:14px; }
+.form-row-2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.form-group { display:flex; flex-direction:column; gap:5px; }
+.form-group label { font-size:12px; font-weight:600; color:var(--text2); }
+.form-control {
+  padding:10px 12px; border:1.5px solid var(--border); border-radius:7px;
+  font-family:inherit; font-size:14px; color:var(--text);
+  background:var(--bg); outline:none; transition:all .2s; width:100%;
+}
+.form-control:focus { border-color:var(--primary); background:var(--white); box-shadow:0 0 0 3px rgba(44,95,138,.1); }
+.form-control::placeholder { color:var(--text3); }
+.form-hint { font-size:11px; color:var(--text3); }
+
+.pax-row { display:flex; gap:10px; }
+.pax-item { flex:1; }
+
+.btn-save {
+  width:100%; padding:13px; margin-top:4px;
+  background:var(--primary); border:none; border-radius:8px;
+  color:white; font-family:inherit; font-size:15px; font-weight:600;
+  cursor:pointer; transition:all .2s;
+}
+.btn-save:hover { background:var(--primary-dark); }
+.btn-save.accent { background:var(--accent); }
+.btn-save.accent:hover { background:var(--accent-dark); }
+
+.type-legend {
+  background:var(--bg); border-radius:8px; padding:12px 14px;
+  display:flex; flex-direction:column; gap:5px;
+}
+.tl-row { display:flex; gap:8px; align-items:baseline; }
+.tl-tag { font-size:11px; font-weight:700; min-width:60px; }
+.tl-desc { font-size:12px; color:var(--text3); }
+
+@media(max-width:480px){
+  .room-grid { grid-template-columns:1fr 1fr; }
+  .floor-grid { grid-template-columns:repeat(3,1fr); }
+  .form-row-2 { grid-template-columns:1fr; }
+  .info-grid  { grid-template-columns:1fr; }
+  .page-body  { padding:20px 14px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ PAGE 1 · LOGIN ══ -->
+<div class="page active" id="page-login">
+  <div class="login-card">
+    <div class="login-logo">🏨</div>
+    <div class="login-title">Krua Talad Yai<br>Check Guest</div>
+    <div class="login-sub">ระบบตรวจสอบข้อมูลแขก · Staff Only</div>
+
+    <div class="login-field">
+      <label>Username</label>
+      <div class="login-input-wrap">
+        <input type="text" class="login-input" id="username" placeholder="กรอก Username" autocomplete="off">
+      </div>
+    </div>
+    <div class="login-field">
+      <label>Password</label>
+      <div class="login-input-wrap">
+        <input type="password" class="login-input" id="password" placeholder="กรอก Password">
+        <button class="pw-toggle" onclick="togglePw()" type="button">👁</button>
+      </div>
+    </div>
+
+    <button class="btn-login" id="loginBtn" onclick="handleLogin()">
+      <span class="btn-text">Login</span>
+    </button>
+
+    <div class="login-links">
+      <span class="login-link">ลืมรหัสผ่าน</span>
+    </div>
+    <div class="login-footer">© 2025 Krua Talad Yai · Internal System</div>
+  </div>
+</div>
+
+<!-- ══ PAGE 2 · FLOOR SELECT ══ -->
+<div class="page" id="page-floors">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-logo">🏨</div>
+      <div>
+        <div class="topbar-name">Krua Talad Yai</div>
+        <div class="topbar-sub">Check Guest Portal</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="user-tag">
+        <div class="user-av">S</div>
+        <span class="user-nm">Staff</span>
+      </div>
+    </div>
+  </div>
+  <div class="page-body">
+    <div class="section-title">เลือกชั้น</div>
+    <div class="section-desc">คลิกที่ชั้นเพื่อดูข้อมูลห้อง</div>
+    <div class="floor-grid" id="floorGrid"></div>
+  </div>
+</div>
+
+<!-- ══ PAGE 3 · ROOMS ══ -->
+<div class="page" id="page-rooms">
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="btn-back" onclick="goToFloors()">← กลับ</button>
+      <div>
+        <div class="topbar-name">Krua Talad Yai</div>
+        <div class="topbar-sub" id="topbarSub">ชั้น —</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="user-tag">
+        <div class="user-av">S</div>
+        <span class="user-nm">Staff</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-body">
+    <div class="breadcrumb">
+      <span class="bc" onclick="goToFloors()">ทุกชั้น</span>
+      <span class="bc-sep">›</span>
+      <span class="bc-cur" id="bcFloor">ชั้น 05</span>
+    </div>
+
+    <!-- SEARCH ONLY — no manage button -->
+    <div class="search-row">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="search-input" id="searchInput"
+               placeholder="ค้นหาเลขห้อง เช่น 0502 หรือชื่อแขก เช่น Kannika..."
+               oninput="handleSearch()">
+      </div>
+    </div>
+
+    <div id="floorSummary" class="floor-summary"></div>
+    <div class="room-grid" id="roomGrid"></div>
+  </div>
+</div>
+
+<!-- ══ BOTTOM SHEET MODAL ══ -->
+<div class="overlay" id="sheetOverlay">
+  <div class="sheet" id="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head">
+      <div>
+        <div class="sheet-title" id="sheetTitle">ห้อง</div>
+        <div class="sheet-room-num" id="sheetRoomNum"></div>
+      </div>
+      <button class="sheet-close" onclick="closeSheet()">✕</button>
+    </div>
+    <div class="sheet-body" id="sheetBody"></div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+//  DATA
+// ══════════════════════════════════════════
+const floorConfig = [
+  {floor:'05',end:20},{floor:'06',end:20},{floor:'07',end:20},
+  {floor:'08',end:20},{floor:'09',end:20},{floor:'10',end:20},
+  {floor:'11',end:20},{floor:'12',end:20},{floor:'14',end:20},
+  {floor:'15',end:20},{floor:'16',end:20},{floor:'17',end:20},
+  {floor:'18',end:8},
+];
+
+function roomsOf(fc) {
+  const out = [];
+  for (let i=1; i<=fc.end; i++) out.push(fc.floor + String(i).padStart(2,'0'));
+  return out;
+}
+
+let guestData = {};
+function load() { try{ const s=localStorage.getItem('ktg_v2'); if(s) guestData=JSON.parse(s); }catch(e){} }
+function save() { try{ localStorage.setItem('ktg_v2',JSON.stringify(guestData)); }catch(e){} }
+load();
+
+function todayStr() { return new Date().toISOString().split('T')[0]; }
+
+function fmtDate(s) {
+  if (!s) return '—';
+  const [y,m,d] = s.split('-');
+  const M=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+  return `${parseInt(d)} ${M[parseInt(m)-1]} ${parseInt(y)+543}`;
+}
+function fmtShort(s) {
+  if (!s) return '—';
+  const [y,m,d] = s.split('-');
+  return `${d}/${m}/${y.slice(2)}`;
+}
+
+// ══════════════════════════════════════════
+//  LOGIN
+// ══════════════════════════════════════════
+function togglePw() {
+  const pw = document.getElementById('password');
+  pw.type = pw.type==='password' ? 'text' : 'password';
+}
+function handleLogin() {
+  const btn = document.getElementById('loginBtn');
+  const u = document.getElementById('username').value.trim();
+  const p = document.getElementById('password').value;
+  if (!u||!p) {
+    const c = document.querySelector('.login-card');
+    c.style.animation='shake .4s ease';
+    setTimeout(()=>c.style.animation='',400);
+    return;
+  }
+  btn.classList.add('loading');
+  setTimeout(()=>{ btn.classList.remove('loading'); goToFloors(); }, 1100);
+}
+document.addEventListener('keydown', e => {
+  if (e.key==='Enter' && document.getElementById('page-login').classList.contains('active')) handleLogin();
+});
+
+// ══════════════════════════════════════════
+//  NAV
+// ══════════════════════════════════════════
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function goToFloors() { buildFloorGrid(); showPage('page-floors'); }
+
+let curFC = null;
+function goToRooms(fc) {
+  curFC = fc;
+  document.getElementById('searchInput').value = '';
+  document.getElementById('topbarSub').textContent = `ชั้น ${parseInt(fc.floor)}`;
+  document.getElementById('bcFloor').textContent   = `ชั้น ${parseInt(fc.floor)}`;
+  buildRoomPage(fc, '');
+  showPage('page-rooms');
+}
+
+// ══════════════════════════════════════════
+//  FLOOR GRID
+// ══════════════════════════════════════════
+function buildFloorGrid() {
+  const g = document.getElementById('floorGrid');
+  g.innerHTML = '';
+  floorConfig.forEach((fc, i) => {
+    const rooms = roomsOf(fc);
+    const occ = rooms.filter(r=>guestData[r]).length;
+    const dots = rooms.map(r=>`<div class="fdot ${guestData[r]?'fdot-occ':'fdot-emp'}"></div>`).join('');
+    const card = document.createElement('div');
+    card.className = 'floor-card';
+    card.style.animationDelay = (i*.04)+'s';
+    card.innerHTML = `
+      <div class="floor-card-num">${parseInt(fc.floor)}</div>
+      <div class="floor-card-lbl">ชั้น ${parseInt(fc.floor)} · ${rooms.length} ห้อง</div>
+      <div class="floor-dots">${dots}</div>
+      <div class="floor-occ-txt">${occ} แขก</div>
+      <span class="floor-arrow">›</span>`;
+    card.onclick = () => goToRooms(fc);
+    g.appendChild(card);
+  });
+}
+
+// ══════════════════════════════════════════
+//  ROOM PAGE
+// ══════════════════════════════════════════
+function buildRoomPage(fc, term) {
+  const rooms = roomsOf(fc);
+  const today = todayStr();
+  const occ   = rooms.filter(r=>guestData[r]).length;
+  const co    = rooms.filter(r=>guestData[r]&&guestData[r].cout===today).length;
+
+  document.getElementById('floorSummary').innerHTML = `
+    <div class="fs-floor-num">${parseInt(fc.floor)}</div>
+    <div class="fs-info">
+      <div class="fs-title">ชั้น ${parseInt(fc.floor)}</div>
+      <div class="fs-sub">${rooms[0]} – ${rooms[rooms.length-1]} · ${rooms.length} ห้อง · กดที่ห้องเพื่อดู/เพิ่มข้อมูล</div>
+    </div>
+    <div class="fs-stats">
+      <div class="fs-stat"><div class="fs-num fs-num-occ">${occ}</div><div class="fs-lbl">มีแขก</div></div>
+      <div class="fs-stat"><div class="fs-num fs-num-co">${co}</div><div class="fs-lbl">CO วันนี้</div></div>
+      <div class="fs-stat"><div class="fs-num fs-num-vac">${rooms.length-occ}</div><div class="fs-lbl">ว่าง</div></div>
+    </div>`;
+
+  renderRooms(fc, term);
+}
+
+function renderRooms(fc, term) {
+  const grid  = document.getElementById('roomGrid');
+  grid.innerHTML = '';
+  const rooms = roomsOf(fc);
+  const today = todayStr();
+  const t = (term||'').toLowerCase().trim();
+  let any = false;
+
+  rooms.forEach((roomNum, i) => {
+    const g = guestData[roomNum];
+    const card = document.createElement('div');
+    const isVac = !g;
+    card.className = 'room-card' + (isVac?' vac':'');
+    card.style.animationDelay = (i*.03)+'s';
+
+    // highlight
+    if (t) {
+      const rm = roomNum.toLowerCase().includes(t);
+      const nm = g && g.name.toLowerCase().includes(t);
+      if (rm||nm) { card.classList.add('highlighted'); any=true; }
+    }
+
+    if (isVac) {
+      card.innerHTML = `
+        <div class="rc-strip strip-vac"></div>
+        <div class="rc-body">
+          <div class="rc-top"><div class="rc-num vac-c">${roomNum}</div></div>
+          <div class="rc-vacant">ว่าง</div>
+          <div class="rc-add-hint">＋ แตะเพื่อเพิ่มแขก</div>
+        </div>`;
+      card.onclick = () => openAddSheet(roomNum);
+    } else {
+      const isCO = g.cout === today;
+      const stripCls = isCO ? 'strip-co' : 'strip-occ';
+      const tagCls = {RB:'tag-rb',RO:'tag-ro','RO(NP)':'tag-ronp',USP:'tag-usp'}[g.type]||'tag-ro';
+      const adults = g.adults||0;
+      const children = g.children||0;
+      const pax = `${adults}A${children>0?' '+children+'LK':''}`;
+      const npStr = g.type==='RO(NP)' ? ' / NP' : '';
+      const coFlag = isCO ? `<div class="co-flag">🔔 Check-out วันนี้</div>` : '';
+      const uspNote = g.type==='USP'&&g.uspDays ? `<div class="usp-info">🍳 อาหารเช้า ${g.uspDays} วัน</div>` : '';
+
+      card.innerHTML = `
+        <div class="rc-strip ${stripCls}"></div>
+        <div class="rc-body">
+          <div class="rc-date">${fmtDate(g.cin)}</div>
+          <div class="rc-top">
+            <div class="rc-num">${roomNum}</div>
+            <span class="type-tag ${tagCls}">${g.type}</span>
+          </div>
+          <div class="rc-name">${g.name}</div>
+          <div class="rc-divider"></div>
+          <div class="rc-meta">
+            <div class="rc-chip">👥 ${pax}</div>
+            <div class="rc-chip">📋 ${g.type}${npStr} / ${pax}</div>
+          </div>
+          <div class="rc-meta" style="margin-top:5px">
+            <div class="rc-chip">CI: ${fmtShort(g.cin)}</div>
+            <div class="rc-chip">CO: ${fmtShort(g.cout)}</div>
+          </div>
+          ${uspNote}${coFlag}
+        </div>`;
+      card.onclick = () => openViewSheet(roomNum);
+    }
+    grid.appendChild(card);
+  });
+
+  if (t && !any) {
+    grid.innerHTML = `<div class="no-result">
+      <div class="no-result-title">ไม่พบข้อมูล</div>
+      <div class="no-result-sub">ไม่พบ "${term}" ในชั้น ${parseInt(fc.floor)}</div></div>`;
+  }
+  if (t && any) {
+    setTimeout(() => {
+      const el = grid.querySelector('.highlighted');
+      if (el) el.scrollIntoView({behavior:'smooth',block:'center'});
+    }, 80);
+  }
+}
+
+function handleSearch() {
+  if (curFC) renderRooms(curFC, document.getElementById('searchInput').value);
+}
+
+// ══════════════════════════════════════════
+//  SHEET OPEN/CLOSE
+// ══════════════════════════════════════════
+let sheetRoom = null;
+
+function openSheet() { document.getElementById('sheetOverlay').classList.add('show'); }
+function closeSheet() {
+  document.getElementById('sheetOverlay').classList.remove('show');
+  sheetRoom = null;
+}
+document.getElementById('sheetOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('sheetOverlay')) closeSheet();
+});
+
+// ══════════════════════════════════════════
+//  VIEW SHEET (ห้องที่มีแขกอยู่)
+// ══════════════════════════════════════════
+function openViewSheet(roomNum) {
+  sheetRoom = roomNum;
+  const g = guestData[roomNum];
+  const isCO = g.cout === todayStr();
+  const adults = g.adults||0, children = g.children||0;
+  const pax = `${adults} ผู้ใหญ่${children>0?' + '+children+' เด็ก':''}`;
+  const paxCode = `${adults}A${children>0?' '+children+'LK':''}`;
+  const npStr = g.type==='RO(NP)' ? ' / NP' : '';
+  const typeFull = {
+    RB:'รวมอาหารเช้า (Bed & Breakfast)',
+    RO:'ไม่รวมอาหารเช้า มีมัดจำ',
+    'RO(NP)':'ไม่รวมอาหารเช้า ไม่มีมัดจำ',
+    USP:'ซื้ออาหารเช้าเพิ่ม (Upsell)'
+  }[g.type]||g.type;
+
+  document.getElementById('sheetTitle').textContent = 'ข้อมูลแขก';
+  document.getElementById('sheetRoomNum').textContent = `ห้อง ${roomNum}`;
+
+  const coAlert = isCO ? `
+    <div class="co-alert">
+      <div class="co-alert-icon">🔔</div>
+      <div class="co-alert-text">Check-out วันนี้!</div>
+    </div>` : '';
+
+  const uspLine = g.type==='USP'&&g.uspDays ? `
+    <div class="info-block">
+      <div class="info-label">อาหารเช้า (USP)</div>
+      <div class="info-val">🍳 ซื้อแล้ว ${g.uspDays} วัน</div>
+    </div>` : '';
+
+  document.getElementById('sheetBody').innerHTML = `
+    <div class="gi-view">
+      ${coAlert}
+      <div class="info-block">
+        <div class="info-label">ชื่อแขก</div>
+        <div class="info-val big">${g.name}</div>
+      </div>
+      <div class="info-grid">
+        <div class="info-block">
+          <div class="info-label">ประเภทห้อง</div>
+          <div class="info-val"><strong>${g.type}${npStr}</strong></div>
+          <div style="font-size:12px;color:var(--text3);margin-top:3px">${typeFull}</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">จำนวนแขก</div>
+          <div class="info-val">${pax}<br><span style="font-size:12px;color:var(--text3)">${paxCode}</span></div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Check-in</div>
+          <div class="info-val">${fmtDate(g.cin)}</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Check-out</div>
+          <div class="info-val">${fmtDate(g.cout)}</div>
+        </div>
+      </div>
+      ${uspLine}
+      <div class="sheet-actions">
+        <button class="btn-sheet-edit" onclick="switchToEditSheet('${roomNum}')">✏️ แก้ไขข้อมูล</button>
+        <button class="btn-sheet-del" onclick="deleteGuest('${roomNum}')">🗑 ลบ</button>
+      </div>
+    </div>`;
+
+  openSheet();
+}
+
+// ══════════════════════════════════════════
+//  ADD SHEET (ห้องว่าง)
+// ══════════════════════════════════════════
+function openAddSheet(roomNum) {
+  sheetRoom = roomNum;
+  document.getElementById('sheetTitle').textContent = 'เพิ่มแขก';
+  document.getElementById('sheetRoomNum').textContent = `ห้อง ${roomNum}`;
+  document.getElementById('sheetBody').innerHTML = buildFormHTML({
+    room: roomNum,
+    name:'', type:'', adults:1, children:0,
+    cin: todayStr(), cout:'', uspDays:''
+  }, false);
+  openSheet();
+}
+
+// ══════════════════════════════════════════
+//  EDIT SHEET
+// ══════════════════════════════════════════
+function switchToEditSheet(roomNum) {
+  sheetRoom = roomNum;
+  const g = guestData[roomNum];
+  document.getElementById('sheetTitle').textContent = 'แก้ไขข้อมูล';
+  document.getElementById('sheetRoomNum').textContent = `ห้อง ${roomNum}`;
+  document.getElementById('sheetBody').innerHTML = buildFormHTML({
+    room: roomNum,
+    name: g.name, type: g.type,
+    adults: g.adults||1, children: g.children||0,
+    cin: g.cin, cout: g.cout, uspDays: g.uspDays||''
+  }, true);
+}
+
+function buildFormHTML(d, isEdit) {
+  const typeOpts = ['','RB','RO','RO(NP)','USP'].map(v => {
+    const labels = {'':'เลือกประเภท...',RB:'RB – รวมอาหารเช้า',RO:'RO – ไม่รวม (มีมัดจำ)','RO(NP)':'RO(NP) – ไม่รวม ไม่มีมัดจำ',USP:'USP – ซื้ออาหารเช้าเพิ่ม'};
+    return `<option value="${v}" ${d.type===v?'selected':''}>${labels[v]||v}</option>`;
+  }).join('');
+
+  return `
+  <div class="form-section">
+    <div class="type-legend">
+      <div class="tl-row"><span class="tl-tag" style="color:#2d6a1e">RB</span><span class="tl-desc">รวมอาหารเช้า</span></div>
+      <div class="tl-row"><span class="tl-tag" style="color:#1a4a7a">RO</span><span class="tl-desc">ไม่รวมอาหารเช้า มีมัดจำ</span></div>
+      <div class="tl-row"><span class="tl-tag" style="color:#7a4a1a">RO(NP)</span><span class="tl-desc">ไม่รวมอาหารเช้า ไม่มีมัดจำ</span></div>
+      <div class="tl-row"><span class="tl-tag" style="color:#6a1a6a">USP</span><span class="tl-desc">ซื้ออาหารเช้าเพิ่ม</span></div>
+    </div>
+
+    <div class="form-group">
+      <label>ชื่อแขก</label>
+      <input type="text" class="form-control" id="s_name" value="${d.name}" placeholder="เช่น Kannika Chumophai">
+    </div>
+
+    <div class="form-group">
+      <label>ประเภทห้อง</label>
+      <select class="form-control" id="s_type" onchange="onSTypeChange()">
+        ${typeOpts}
+      </select>
+    </div>
+
+    <div class="form-group" id="s_usp_wrap" style="display:${d.type==='USP'?'flex':'none'};flex-direction:column;gap:5px;">
+      <label>จำนวนวันอาหารเช้า (USP)</label>
+      <input type="number" class="form-control" id="s_usp_days" value="${d.uspDays||''}" min="1" placeholder="เช่น 2">
+    </div>
+
+    <div class="form-group">
+      <label>จำนวนผู้เข้าพัก</label>
+      <div class="pax-row">
+        <div class="pax-item">
+          <input type="number" class="form-control" id="s_adults" value="${d.adults}" min="0" placeholder="0">
+          <span class="form-hint">ผู้ใหญ่ (A)</span>
+        </div>
+        <div class="pax-item">
+          <input type="number" class="form-control" id="s_children" value="${d.children}" min="0" placeholder="0">
+          <span class="form-hint">เด็ก (LK)</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row-2">
+      <div class="form-group">
+        <label>วัน Check-in</label>
+        <input type="date" class="form-control" id="s_cin" value="${d.cin||''}">
+      </div>
+      <div class="form-group">
+        <label>วัน Check-out</label>
+        <input type="date" class="form-control" id="s_cout" value="${d.cout||''}">
+      </div>
+    </div>
+
+    <button class="btn-save ${isEdit?'':'accent'}" onclick="saveSheet('${d.room}', ${isEdit})">
+      ${isEdit ? '💾 บันทึกการแก้ไข' : '＋ เพิ่มแขก'}
+    </button>
+    ${isEdit ? `<button class="btn-sheet-del" style="width:100%;margin-top:8px" onclick="deleteGuest('${d.room}')">🗑 ลบแขกออกจากห้องนี้</button>` : ''}
+  </div>`;
+}
+
+function onSTypeChange() {
+  const t = document.getElementById('s_type').value;
+  document.getElementById('s_usp_wrap').style.display = t==='USP' ? 'flex' : 'none';
+}
+
+function saveSheet(roomNum, isEdit) {
+  const name     = document.getElementById('s_name').value.trim();
+  const type     = document.getElementById('s_type').value;
+  const adults   = parseInt(document.getElementById('s_adults').value)||0;
+  const children = parseInt(document.getElementById('s_children').value)||0;
+  const cin      = document.getElementById('s_cin').value;
+  const cout     = document.getElementById('s_cout').value;
+  const uspDays  = type==='USP' ? parseInt(document.getElementById('s_usp_days').value)||1 : null;
+
+  if (!name || !type) {
+    alert('กรุณากรอกชื่อแขกและเลือกประเภทห้อง');
+    return;
+  }
+
+  guestData[roomNum] = { name, type, adults, children, cin, cout, uspDays };
+  save();
+  closeSheet();
+  buildRoomPage(curFC, document.getElementById('searchInput').value);
+  buildFloorGrid();
+}
+
+function deleteGuest(roomNum) {
+  if (!confirm(`ลบแขกออกจากห้อง ${roomNum}?`)) return;
+  delete guestData[roomNum];
+  save();
+  closeSheet();
+  buildRoomPage(curFC, document.getElementById('searchInput').value);
+  buildFloorGrid();
+}
+</script>
+</body>
+</html>
